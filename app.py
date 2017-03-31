@@ -153,7 +153,7 @@ def query_run(id, database_id):
             for col in curse.description:
                 query_results_cols.append(col.name)
 
-        except dbapi2.ProgrammingError, e:
+        except dbapi2.ProgrammingError as e:
             # TODO: Exceptions don't seem to be standard in DB-API2, 
             # so this will likely have to be checked against other
             # engines.  The following works with psycopg2.

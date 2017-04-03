@@ -1,10 +1,23 @@
+import ssl
 import pymongo as m
 from bson.objectid import ObjectId
 
 import config
 from aes import AESCipher
 
-client = m.MongoClient(config.mongo_hostname, config.mongo_port)
+# The `connect=False` option should be used when using ssl. See the following bug
+# for more details.
+# https://jira.mongodb.org/browse/PYTHON-961
+if getattr(config, "mongo_ssl"):
+    ssl_args = {
+        'ssl': getattr(config, "mongo_ssl", False),
+        'connect': not getattr(config, "mongo_ssl", True),
+        'ssl_cert_reqs': ssl.CERT_NONE,
+    }
+else:
+    ssl_args = {}
+
+client = m.MongoClient(config.mongo_hostname, config.mongo_port, **ssl_args)
 db = client[config.mongo_db]
 
 if (len(config.mongo_username.strip()) > 0
